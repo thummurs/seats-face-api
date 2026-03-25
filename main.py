@@ -7,7 +7,7 @@
 #   SEATS_API_URL=https://your-railway-url.up.railway.app
 #   SEATS_API_KEY=your_api_key_here
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 import boto3
 import httpx
