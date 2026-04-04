@@ -8,7 +8,8 @@
 #   SEATS_API_KEY=your_api_key_here
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+import os
 import boto3
 import httpx
 import logging
@@ -57,6 +58,8 @@ async def recognize(request: Request):
         raise HTTPException(status_code=400, detail="Missing X-Verification-Id header")
 
     image_bytes = await request.body()
+    with open("/tmp/last_capture.jpg", "wb") as f:
+        f.write(image_bytes)
     if not image_bytes:
         raise HTTPException(status_code=400, detail="Empty image body")
 
@@ -168,3 +171,9 @@ def delete_face(face_id: str):
         return {"message": f"Face {face_id} deleted"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/last-capture")
+def last_capture():
+    if os.path.exists("/tmp/last_capture.jpg"):
+        return FileResponse("/tmp/last_capture.jpg", media_type="image/jpeg")
+    return {"error": "No capture yet"}
